@@ -1,0 +1,386 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "pirates of cruising",
+      "intents": [
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "help"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+            "exit",
+            "bye",
+            "stop"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "DestinationEventIntent",
+          "slots": [],
+          "samples": [
+            "Search for cruise",
+            "Search for a cruise",
+            "Find a cruise"
+          ]
+        },
+        {
+          "name": "DestinationResponseEventIntent",
+          "slots": [
+            {
+              "name": "destination",
+              "type": "AMAZON.AT_CITY"
+            }
+          ],
+          "samples": [
+            "In the {destination}",
+            "{destination}"
+          ]
+        },
+        {
+          "name": "DateResponseEventIntent",
+          "slots": [
+            {
+              "name": "date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "{date}",
+            "on {date}"
+          ]
+        },
+        {
+          "name": "DurationResponseEventIntent",
+          "slots": [
+            {
+              "name": "duration",
+              "type": "AMAZON.DURATION"
+            }
+          ],
+          "samples": [
+            "{duration}",
+            "For around {duration}",
+            "For Approximately {duration}",
+            "For {duration}"
+          ]
+        },
+        {
+          "name": "ShipSizeResponseEventIntent",
+          "slots": [
+            {
+              "name": "shipSize",
+              "type": "ShipSize"
+            }
+          ],
+          "samples": [
+            "{shipSize}"
+          ]
+        },
+        {
+          "name": "FamilyFriendlyResponseEventIntent",
+          "slots": [
+            {
+              "name": "familyFriendly",
+              "type": "familyFriendly"
+            }
+          ],
+          "samples": [
+            "{familyFriendly}"
+          ]
+        },
+        {
+          "name": "EnglishLanguageResponseEventIntent",
+          "slots": [
+            {
+              "name": "SpeakEnglish",
+              "type": "SpeakEnglish"
+            }
+          ],
+          "samples": [
+            "{SpeakEnglish}"
+          ]
+        },
+        {
+          "name": "BudgetResponseEventIntent",
+          "slots": [
+            {
+              "name": "Budget",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "Up to {Budget}",
+            "Up to {Budget} Euro",
+            "Maximum {Budget}",
+            "Maximum {Budget} Euro",
+            "{Budget} Euros"
+          ]
+        },
+        {
+          "name": "UsersCountEventIntent",
+          "slots": [
+            {
+              "name": "count",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "No Teenagers",
+            "No Teens",
+            "No Kids",
+            "No Adults",
+            "None",
+            "{count} adult",
+            "{count} teenagers",
+            "{count} teens",
+            "{count} kids",
+            "{count} adults",
+            "{count}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "ShipSize",
+          "values": [
+            {
+              "name": {
+                "value": "I Do Not Care"
+              }
+            },
+            {
+              "name": {
+                "value": "Do Not Care"
+              }
+            },
+            {
+              "name": {
+                "value": "Small"
+              }
+            },
+            {
+              "name": {
+                "value": "Medium"
+              }
+            },
+            {
+              "name": {
+                "value": "Large"
+              }
+            },
+            {
+              "name": {
+                "value": "Small ships"
+              }
+            },
+            {
+              "name": {
+                "value": "Medium ships"
+              }
+            },
+            {
+              "name": {
+                "value": "Large ships"
+              }
+            },
+            {
+              "name": {
+                "value": "Small cruise ships"
+              }
+            },
+            {
+              "name": {
+                "value": "Medium cruise ships"
+              }
+            },
+            {
+              "name": {
+                "value": "Large cruise ships"
+              }
+            },
+            {
+              "name": {
+                "value": "A small ship"
+              }
+            },
+            {
+              "name": {
+                "value": "A medium ship"
+              }
+            },
+            {
+              "name": {
+                "value": "A large ship"
+              }
+            },
+            {
+              "name": {
+                "value": "A small cruise ship"
+              }
+            },
+            {
+              "name": {
+                "value": "A medium cruise ship"
+              }
+            },
+            {
+              "name": {
+                "value": "A large cruise ship"
+              }
+            },
+            {
+              "name": {
+                "value": "Dont care"
+              }
+            },
+            {
+              "name": {
+                "value": "I dont care"
+              }
+            }
+          ]
+        },
+        {
+          "name": "familyFriendly",
+          "values": [
+            {
+              "name": {
+                "value": "Very critical"
+              }
+            },
+            {
+              "name": {
+                "value": "Super Important"
+              }
+            },
+            {
+              "name": {
+                "value": "Do Not Care"
+              }
+            },
+            {
+              "name": {
+                "value": "I Do Not Care"
+              }
+            },
+            {
+              "name": {
+                "value": "Yes Family Friendly"
+              }
+            },
+            {
+              "name": {
+                "value": "Dont care"
+              }
+            },
+            {
+              "name": {
+                "value": "I dont care"
+              }
+            },
+            {
+              "name": {
+                "value": "Not important"
+              }
+            },
+            {
+              "name": {
+                "value": "Not relevant"
+              }
+            },
+            {
+              "name": {
+                "value": "Very important"
+              }
+            },
+            {
+              "name": {
+                "value": "Important"
+              }
+            },
+            {
+              "name": {
+                "value": "For sure"
+              }
+            },
+            {
+              "name": {
+                "value": "sure"
+              }
+            }
+          ]
+        },
+        {
+          "name": "SpeakEnglish",
+          "values": [
+            {
+              "name": {
+                "value": "no"
+              }
+            },
+            {
+              "name": {
+                "value": "yes"
+              }
+            },
+            {
+              "name": {
+                "value": "yes i do"
+              }
+            },
+            {
+              "name": {
+                "value": "I dont"
+              }
+            },
+            {
+              "name": {
+                "value": "I dont speak English"
+              }
+            },
+            {
+              "name": {
+                "value": "I do not speak English"
+              }
+            },
+            {
+              "name": {
+                "value": "i do not"
+              }
+            },
+            {
+              "name": {
+                "value": "I do speak English"
+              }
+            },
+            {
+              "name": {
+                "value": "I speak English"
+              }
+            },
+            {
+              "name": {
+                "value": "I do"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
