@@ -40,6 +40,8 @@ public class SideKickSpeechlet implements SpeechletV2 {
      */
     private static final String NAME_SLOT = "intentname";
 
+    private static final String ESCALATION = "ESCALATION";
+
     private StringBuilder responseBuilder = new StringBuilder();
 
     private String deviceId;
@@ -83,7 +85,6 @@ public class SideKickSpeechlet implements SpeechletV2 {
         deviceId = systemState.getDevice().getDeviceId();
         apiAccessToken = systemState.getApiAccessToken();
 
-        //apiAccessToken = requestEnvelope.getSession().getUser().getAccessToken();
         responseBuilder = new StringBuilder();
 
         log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
@@ -94,91 +95,6 @@ public class SideKickSpeechlet implements SpeechletV2 {
             outputSpeech.setSsml("<speak>" + propertyReader.getFatalError() + "</speak>");
         }
 
-/*        Permissions permissions = session.getUser().getPermissions();
-        if (permissions == null) {
-            log.info("Checked the Permissions in the User Session - The user hasn't authorized the skill. Sending a permissions card.");
-            return getPermissionsResponse();
-        }*/
-
-        CloseableHttpClient closeableHttpClient = HttpClients.createDefault();
-
-        String nameRequestUrl = apiEndpoint + "/v2/accounts/~current/settings/Profile.name";
-        String emailRequestUrl = apiEndpoint + "/v2/accounts/~current/settings/Profile.email";
-
-        log.info("Request will be made to the following URL: {}", nameRequestUrl);
-        log.info("Request will be made to the following URL: {}", emailRequestUrl);
-
-//        HttpGet httpGetName = new HttpGet(nameRequestUrl);
-        HttpGet httpGetEmail = new HttpGet(emailRequestUrl);
-
-//        httpGetName.addHeader("Authorization", "Bearer " + apiAccessToken);
-        httpGetEmail.addHeader("Authorization", "Bearer " + apiAccessToken);
-
-/*        try {
-            HttpResponse addressResponse = closeableHttpClient.execute(httpGetName);
-            int statusCode = addressResponse.getStatusLine().getStatusCode();
-
-            log.info("The Device Address API responded with a status code of {}", statusCode);
-            if (statusCode == HttpStatus.SC_OK) {
-                HttpEntity httpEntity = addressResponse.getEntity();
-                userName = EntityUtils.toString(httpEntity);
-
-                log.debug("The user name is == " + userName);
-
-            } else if (statusCode == HttpStatus.SC_FORBIDDEN) {
-                log.info("Failed to authorize with a status code of {}", statusCode);
-                return  getPermissionsResponse();
-            } else {
-                String errorMessage = "Device Address API query failed with status code of " + statusCode;
-                log.info(errorMessage);
-            }
-        }  catch (IOException e) {
-        } finally {
-            log.info("Request to Address Device API completed.");
-        }*/
-
-        try {
-            HttpResponse addressResponse = closeableHttpClient.execute(httpGetEmail);
-            int statusCode = addressResponse.getStatusLine().getStatusCode();
-
-            log.info("The Device Address API responded with a status code of {}", statusCode);
-            if (statusCode == HttpStatus.SC_OK) {
-                HttpEntity httpEntity = addressResponse.getEntity();
-                userEmail = EntityUtils.toString(httpEntity);
-
-                log.debug("The user email is == " + userEmail);
-
-            } else if (statusCode == HttpStatus.SC_FORBIDDEN) {
-                log.info("Failed to authorize with a status code of {}", statusCode);
-//                return  getPermissionsResponse();
-            } else {
-                String errorMessage = "Device Address API query failed with status code of " + statusCode;
-                log.info(errorMessage);
-            }
-        }  catch (IOException e) {
-        } finally {
-            log.info("Request to Address Device API completed.");
-        }
-
-        //ToDo needs to be removed soon. HACK
-
-        userName = "Vikas";
-        userEmail = "malhotra.vikas@gmail.com";
-
-        session.setAttribute("User_Name", userName);
-        session.setAttribute("User_Email", userEmail);
-
-        if (userEmail != null && userName != null) {
-            log.debug("Saving stuff");
-            SideKickContact contact = new SideKickContact(userEmail, userName);
-
-            AmazonDynamoDB dynamoDBClient = new AmazonDynamoDBClient();
-            DynamoDBMapper mapper = new DynamoDBMapper(dynamoDBClient);
-//            mapper.save(contact);
-            log.debug("Saved stuff");
-        }
-
-
         return getWelcomeResponse();
 
     }
@@ -188,25 +104,51 @@ public class SideKickSpeechlet implements SpeechletV2 {
         log.info("onIntent requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
                 requestEnvelope.getSession().getSessionId());
 
+        IntentRequest request = requestEnvelope.getRequest();
+        Session session = requestEnvelope.getSession();
         String intentName = requestEnvelope.getRequest().getIntent().getName();
+        SystemState systemState = getSystemState(requestEnvelope.getContext());
 
         log.debug("Entering intent name == " + intentName);
 
-        if ("AboutUsIntent".equals(intentName)) {
-            return handleAboutUsIntent(requestEnvelope);
-        } else if ("ConsumerIntent".equals(intentName)) {
-            return handleConsumerIntent(requestEnvelope);
-        } else if ("BusinessIntent".equals(intentName)) {
-            return handleBusinessIntent(requestEnvelope);
-        } else if ("ContactUsIntent".equals(intentName)) {
-            return handleContactUsIntent(requestEnvelope);
+        if ("PrimaryIntent".equals(intentName)) {
+            return handlePrimaryIntent(requestEnvelope);
+        } else if ("PlaceOrderIntent".equals(intentName)) {
+            return handlePlaceOrderIntent(requestEnvelope);
         } else if ("YesIntent".equals(intentName)) {
             return handleYesIntent(requestEnvelope);
         } else if ("NoIntent".equals(intentName)) {
             return handleNoIntent(requestEnvelope);
+        } else if ("ContactHumanIntent".equals(intentName)) {
+            return handleContactHumanIntent(requestEnvelope);
         } else if ("AMAZON.HelpIntent".equals(intentName)) {
             return  newAskResponse(propertyReader.getSpeechHelp(), false, propertyReader.getSpeechHelp(), false);
         } else if ("AMAZON.FallbackIntent".equals(intentName)) {
+            Integer Iescalation = (Integer) session.getAttribute(ESCALATION);
+            int escalation = 0;
+            if (Iescalation != null) {
+                escalation = Iescalation.intValue();
+                escalation = escalation+1;
+
+                Iescalation = new Integer(escalation);
+                session.setAttribute(ESCALATION, Iescalation);
+            } else {
+                Iescalation = new Integer(escalation);
+                session.setAttribute(ESCALATION, Iescalation);
+            }
+
+            if (escalation >= 2) {
+                // escalate to human
+                session.removeAttribute(ESCALATION);
+
+                String message = "I am sorry!! It appears i am not able to help you. Let me connect you to someone who can";
+                String apiEndpoint = systemState.getApiEndpoint();
+                // Dispatch a progressive response to engage the user while fetching events
+                dispatchProgressiveResponse(request.getRequestId(), message, systemState, apiEndpoint);
+
+                // Call Skype API to place a skype call
+
+            }
             return handleNoMatchingIntent(requestEnvelope);
         }else if ("AMAZON.StopIntent".equals(intentName)) {
             PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
@@ -222,6 +164,32 @@ public class SideKickSpeechlet implements SpeechletV2 {
 
             return newAskResponse(outputSpeech, true, repromptText, true);
         }
+    }
+
+    private SpeechletResponse handlePlaceOrderIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+
+        Intent intent = requestEnvelope.getRequest().getIntent();
+        String itemOfInterest = intent.getSlot("FOOD_ITEM").getValue();
+
+        if (itemOfInterest != null) {
+            log.debug("Captured the food item as = " + itemOfInterest);
+        } else {
+
+        }
+
+        return  newAskResponse("Captured food item as " + itemOfInterest, false, propertyReader.getSpeechHelp(), false);
+
+    }
+
+    private SpeechletResponse handlePrimaryIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+        Session session = requestEnvelope.getSession();
+
+        session.setAttribute("PHASE", "SPECIALS");
+
+        String message = "I can help you select and order food. Just tell me what are you looking for in a few words. " +
+                "For example, you can say Order Chicken, Get Beer, Order steaks. Would you prefer to know about today's specials?";
+        return  newAskResponse(message, false, propertyReader.getSpeechHelp(), false);
+
     }
 
     private SpeechletResponse handleNoMatchingIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
@@ -242,71 +210,47 @@ public class SideKickSpeechlet implements SpeechletV2 {
     }
 
     private SpeechletResponse handleYesIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
-        IntentRequest request = requestEnvelope.getRequest();
         Session session = requestEnvelope.getSession();
 
-        String stage = (String) session.getAttribute("Stage");
-        if (stage == null) {
-            stage = "AboutUsIntent";
-        }
+        String stage = (String) session.getAttribute("PHASE");
+        String menuID = (String) session.getAttribute("MENU_ID");
 
-        log.debug("Coming into Yes Intent from " + stage);
+        log.debug("Coming into Yes Intent for " + stage);
 
-        if (stage.equalsIgnoreCase("BusinessIntent")) {
-            return handleContactUsIntent(requestEnvelope);
-        } else if (stage.equalsIgnoreCase("ConsumerIntent")) {
-            return handleContactUsIntent(requestEnvelope);
-        } else if (stage.equalsIgnoreCase("AboutUsIntent")) {
-            return handleConsumerIntent(requestEnvelope);
+        if (stage.equalsIgnoreCase("SPECIALS")) {
+            return handleSpecial(requestEnvelope);
+        } else if (stage.equalsIgnoreCase("PLACE_ORDER")) {
+            log.debug("Recording the order for - " + menuID);
         }
 
         return handleNoMatchingIntent(requestEnvelope);
     }
 
-    private SpeechletResponse handleContactUsIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+    private SpeechletResponse handleContactHumanIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
 
         IntentRequest request = requestEnvelope.getRequest();
         Session session = requestEnvelope.getSession();
         Intent intent = request.getIntent();
-        session.setAttribute("Stage", intent.getName());
-        String name = (String) session.getAttribute("User_Name");
-        String email = (String) session.getAttribute("User_Email");
-
-        try {
-            // sent a thank you email to the customer
-            AWSeMailService.sendEmail("vikas@uttrdev.co", email, propertyReader.getEmailSubject(), propertyReader.getEmailMessage(), "Uttr Dev");
-
-            String message = "We have a new customer contact us from : " + name;
-            message = message + " . The contact email address is : " + email;
-
-            // Sent a heads up email to Moe
-            AWSeMailService.sendEmail("vikas@uttrdev.co", "moe@uttrdev.co", "Heads up new customer", message, "Uttr Dev Contact Us");
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        session.removeAttribute("Stage");
 
         PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-        outputSpeech.setText(propertyReader.getEmailMessage());
+        outputSpeech.setText("Contacting the call center for you. Please stay tuned. ");
         return SpeechletResponse.newTellResponse(outputSpeech);
     }
 
-    private SpeechletResponse handleBusinessIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+    private SpeechletResponse handleSpecial(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+        Session session = requestEnvelope.getSession();
+
         SimpleCard card = new SimpleCard();
         card.setTitle(propertyReader.getSkillName());
 
-        log.debug("In handleBusinessIntent");
-        SpeechletResponse response = newAskResponse(propertyReader.getSpeechBusiness(), false, propertyReader.getSpeechReprompt(), false);
-        response.setCard(card);
+        log.debug("In handleSpecial");
+        String message = "We have Soup, Salad & Garlic Pan Bread for the specials. You will relish the Soup of the day, house or Caesar salad, with a lunch-size Jack’s Garlic Pan Bread. " +
+                "This is our healthy vegan dish. Would you like to place an order? ";
 
-        IntentRequest request = requestEnvelope.getRequest();
-        Session session = requestEnvelope.getSession();
-        Intent intent = request.getIntent();
-        session.setAttribute("Stage", "BusinessIntent");
+        session.setAttribute("PHASE", "PLACE_ORDER");
+        session.setAttribute("MENU_ID", "6100");
+        SpeechletResponse response = newAskResponse(message, false, propertyReader.getSpeechHelp(), false);
+        response.setCard(card);
 
         return response;
     }
@@ -361,10 +305,11 @@ public class SideKickSpeechlet implements SpeechletV2 {
      * @return SpeechletResponse object with voice/card response to return to the user
      */
     private SpeechletResponse getWelcomeResponse() {
-        String speechOutput = propertyReader.getWelcomeMessage();
+        String speechOutput = "Welcome to Jack and Stack!! How can i help you today? If " +
+                "you dont know what you want try saying what's up";
         // If the user either does not reply to the welcome message or says something that is not
         // understood, they will be prompted again with this text.
-        String repromptText = propertyReader.getSpeechReprompt();
+        String repromptText = "If you dont know what you want try saying what's up";
 
         return newAskResponse(speechOutput, false, repromptText, false);
     }
