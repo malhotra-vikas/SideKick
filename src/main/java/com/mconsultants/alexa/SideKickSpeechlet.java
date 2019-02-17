@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 public class SideKickSpeechlet implements SpeechletV2 {
@@ -50,6 +49,15 @@ public class SideKickSpeechlet implements SpeechletV2 {
 
     private String userName;
     private String userEmail;
+
+    private HashMap<String, String> MENU_GROUP;
+    private HashMap<String, String> MENU_ITEM_NAME;
+    private HashMap<String, String[]> MENU_ITEMS_BY_ID;
+    private HashMap<String, ArrayList> MENU_ITEMS_BY_GROUP;
+    private ArrayList MENU_ITEMS_GROUPED;
+
+    private String[] MENU_ITEM;
+
 
     /**
      * Service to send progressive response directives.
@@ -87,6 +95,8 @@ public class SideKickSpeechlet implements SpeechletV2 {
 
         responseBuilder = new StringBuilder();
 
+        readMenu();
+
         log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
 
@@ -97,6 +107,121 @@ public class SideKickSpeechlet implements SpeechletV2 {
 
         return getWelcomeResponse();
 
+    }
+
+    private void readMenu() {
+        MENU_GROUP = new HashMap<>();
+        MENU_ITEM_NAME = new HashMap<>();
+        MENU_ITEMS_BY_GROUP = new HashMap<>();
+        MENU_ITEMS_BY_ID = new HashMap<>();
+        MENU_ITEMS_GROUPED = new ArrayList();
+
+
+        HashMap map = new HashMap();
+
+
+        MENU_GROUP.put("drinks", "Drinks");
+        MENU_GROUP.put("lunch", "Lunch");
+        MENU_GROUP.put( "sharable", "Sharable");
+        MENU_GROUP.put("steaks", "Steaks");
+        MENU_GROUP.put("dessert", "Dessert");
+        MENU_GROUP.put("steak", "Steaks");
+        MENU_GROUP.put( "sharables", "Sharable");
+        MENU_GROUP.put("drink", "Drinks");
+
+        MENU_ITEM_NAME.put("draft, tap", "draft, tap");
+        MENU_ITEM_NAME.put("muskoka", "Muskoka");
+        MENU_ITEM_NAME.put("muskoka half", "muskoka half");
+        MENU_ITEM_NAME.put("padavena", "Padavena");
+        MENU_ITEM_NAME.put("paulaner", "Paulaner");
+        MENU_ITEM_NAME.put("beer", "Beer");
+
+        MENU_ITEM = new String[10];
+        MENU_ITEM[0] = "5100";
+        MENU_ITEM[1] = "Drinks";
+        MENU_ITEM[2] = "";
+        MENU_ITEM[3] = "Draft Beer";
+        MENU_ITEM[4] = "Draft Beer";
+        MENU_ITEM[5] = "Draft Beer";
+        MENU_ITEM[6] = "5";
+        MENU_ITEM[7] = "7% Alcohol by volume";
+        MENU_ITEM[8] = "beer";
+        MENU_ITEM[9] = "Light";
+        MENU_ITEMS_BY_ID.put(MENU_ITEM[0], MENU_ITEM);
+        MENU_ITEMS_GROUPED.add(MENU_ITEM);
+        log.debug("Addedd for " + MENU_ITEM[3]);
+
+        MENU_ITEM = new String[10];
+        MENU_ITEM[0] = "5101";
+        MENU_ITEM[1] = "Drinks";
+        MENU_ITEM[2] = "";
+        MENU_ITEM[3] = "Muskoka";
+        MENU_ITEM[4] = "Muskoka Beer";
+        MENU_ITEM[5] = "Muskoka Beer";
+        MENU_ITEM[6] = "8";
+        MENU_ITEM[7] = "5% Alcohol by volume";
+        MENU_ITEM[8] = "beer";
+        MENU_ITEM[9] = "Muskoka";
+        MENU_ITEMS_BY_ID.put(MENU_ITEM[0], MENU_ITEM);
+        MENU_ITEMS_GROUPED.add(MENU_ITEM);
+        log.debug("Addedd for " + MENU_ITEM[3]);
+
+        MENU_ITEM = new String[10];
+        MENU_ITEM[0] = "5102";
+        MENU_ITEM[1] = "Drinks";
+        MENU_ITEM[2] = "";
+        MENU_ITEM[3] = "Muskoka Half";
+        MENU_ITEM[4] = "Muskoka Half";
+        MENU_ITEM[5] = "Muskoka Half";
+        MENU_ITEM[6] = "5";
+        MENU_ITEM[7] = "5% Alcohol by volume";
+        MENU_ITEM[8] = "Muskoka";
+        MENU_ITEM[9] = "Muskoka Half";
+        MENU_ITEMS_BY_ID.put(MENU_ITEM[0], MENU_ITEM);
+        MENU_ITEMS_GROUPED.add(MENU_ITEM);
+        log.debug("Addedd for " + MENU_ITEM[3]);
+
+        MENU_ITEMS_BY_GROUP.put(MENU_ITEM[1].toLowerCase(), MENU_ITEMS_GROUPED);
+
+/*
+        MENU_ITEM[0] = "5103";
+        MENU_ITEM[1] = "Lunch";
+        MENU_ITEM[2] = "";
+        MENU_ITEM[3] = "Soup and Salad";
+        MENU_ITEM[4] = "Soup, Salad & Garlic Pan Bread";
+        MENU_ITEM[5] = "Soup, Salad & Garlic Pan Bread";
+        MENU_ITEM[6] = "11.97";
+        MENU_ITEM[7] = " Soup of the day, house or Caesar salad, with a lunch-size Jack’s Garlic Pan Bread.";
+        MENU_ITEM[8] = "Macro";
+        MENU_ITEM[9] = "Vegan";
+        MENU_ITEMS_BY_ID.put(MENU_ITEM[0], MENU_ITEM);
+        MENU_ITEMS_BY_GROUP.put(MENU_ITEM[1], MENU_ITEM);
+
+        MENU_ITEM[0] = "5104";
+        MENU_ITEM[1] = "Lunch";
+        MENU_ITEM[2] = "";
+        MENU_ITEM[3] = "Chicken Quesadilla & Salad";
+        MENU_ITEM[4] = "Chicken Quesadilla & Salad";
+        MENU_ITEM[5] = "Chicken Quesadilla & Salad";
+        MENU_ITEM[6] = "12.25";
+        MENU_ITEM[7] = "Grilled chicken, pico de gallo lots of melted Monterey cheese in toasted flour tortillas. Served with house salsa";
+        MENU_ITEM[8] = "Macro";
+        MENU_ITEM[9] = "Veggie";
+        MENU_ITEMS_BY_ID.put(MENU_ITEM[0], MENU_ITEM);
+        MENU_ITEMS_BY_GROUP.put(MENU_ITEM[1], MENU_ITEM);
+
+        MENU_ITEM[0] = "5105";
+        MENU_ITEM[1] = "Lunch";
+        MENU_ITEM[2] = "";
+        MENU_ITEM[3] = "Nachos and Side";
+        MENU_ITEM[4] = "Nachos and Side";
+        MENU_ITEM[5] = "Nachos and Side";
+        MENU_ITEM[6] = "10.97";
+        MENU_ITEM[7] = "Corn tortilla chips, tomatoes, peppers, onions, jalapeños, three cheeses and a side";
+        MENU_ITEM[8] = "Macro";
+        MENU_ITEM[9] = "Veggie";
+        MENU_ITEMS_BY_ID.put(MENU_ITEM[0], MENU_ITEM);
+        MENU_ITEMS_BY_GROUP.put(MENU_ITEM[1], MENU_ITEM);*/
     }
 
     @Override
@@ -121,34 +246,11 @@ public class SideKickSpeechlet implements SpeechletV2 {
             return handleNoIntent(requestEnvelope);
         } else if ("ContactHumanIntent".equals(intentName)) {
             return handleContactHumanIntent(requestEnvelope);
+        } else if ("TellMeAboutIntent".equals(intentName)) {
+            return handleTellMeAboutIntent(requestEnvelope);
         } else if ("AMAZON.HelpIntent".equals(intentName)) {
             return  newAskResponse(propertyReader.getSpeechHelp(), false, propertyReader.getSpeechHelp(), false);
         } else if ("AMAZON.FallbackIntent".equals(intentName)) {
-            Integer Iescalation = (Integer) session.getAttribute(ESCALATION);
-            int escalation = 0;
-            if (Iescalation != null) {
-                escalation = Iescalation.intValue();
-                escalation = escalation+1;
-
-                Iescalation = new Integer(escalation);
-                session.setAttribute(ESCALATION, Iescalation);
-            } else {
-                Iescalation = new Integer(escalation);
-                session.setAttribute(ESCALATION, Iescalation);
-            }
-
-            if (escalation >= 2) {
-                // escalate to human
-                session.removeAttribute(ESCALATION);
-
-                String message = "I am sorry!! It appears i am not able to help you. Let me connect you to someone who can";
-                String apiEndpoint = systemState.getApiEndpoint();
-                // Dispatch a progressive response to engage the user while fetching events
-                dispatchProgressiveResponse(request.getRequestId(), message, systemState, apiEndpoint);
-
-                // Call Skype API to place a skype call
-
-            }
             return handleNoMatchingIntent(requestEnvelope);
         }else if ("AMAZON.StopIntent".equals(intentName)) {
             PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
@@ -166,19 +268,62 @@ public class SideKickSpeechlet implements SpeechletV2 {
         }
     }
 
+    private SpeechletResponse handleTellMeAboutIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+        Intent intent = requestEnvelope.getRequest().getIntent();
+        String itemOfInterest = intent.getSlot("SELECTED_CHOICE").getValue();
+
+        return newAskResponse("TBD. Here i will tell you more about the selected item", true, "TBD. Here i will tell you more about the selected item", true);
+
+    }
+
     private SpeechletResponse handlePlaceOrderIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
 
         Intent intent = requestEnvelope.getRequest().getIntent();
         String itemOfInterest = intent.getSlot("FOOD_ITEM").getValue();
+        StringBuilder itemName;
+        String[] menuItem;
+
+        log.debug("Within handlePlaceOrderIntent Captured the food item as = " + itemOfInterest);
 
         if (itemOfInterest != null) {
-            log.debug("Captured the food item as = " + itemOfInterest);
+            Iterator keys = MENU_GROUP.keySet().iterator();
+            String key;
+            while (keys.hasNext()) {
+                key = (String) keys.next();
+                log.debug("The next key is -" + key);
+                log.debug("Item from the MENU GROUP for this key is -" + MENU_GROUP.get(key.toLowerCase()));
+            }
+            ArrayList menuItemsList = MENU_ITEMS_BY_GROUP.get(itemOfInterest.toLowerCase());
+
+            if (menuItemsList != null) {
+                log.debug("Number of Menu Items found is - " + menuItemsList.size());
+                itemName = new StringBuilder();
+
+                for (int i=0; i<menuItemsList.size(); i++) {
+                    menuItem = (String[]) menuItemsList.get(i);
+                    log.debug("Item from the MENU GROUP for this key is -" + menuItem);
+                    itemName.append(menuItem[3]);
+
+                    if (i<menuItemsList.size()) {
+                        itemName.append(", ");
+                    }
+                }
+
+                return newAskResponse("Great choice!! I have " + menuItemsList.size() + " matching items. These are " + itemName.toString() + " . Which one would you like to order?", false, propertyReader.getSpeechHelp(), false);
+
+            } else {
+                String menuItemName = MENU_ITEM_NAME.get(itemOfInterest.toLowerCase());
+                if (menuItemName == null) {
+                    return handleNoMatchingIntent(requestEnvelope);
+                } else {
+                    log.debug("The selected item is = " + menuItemName);
+                    return newAskResponse("Placing an order for " + menuItemName + ". Would you like to order something else as well?", false, propertyReader.getSpeechHelp(), false);
+                }
+            }
+
         } else {
-
+            return newAskResponse("What would you like to order today?", false, propertyReader.getSpeechHelp(), false);
         }
-
-        return  newAskResponse("Captured food item as " + itemOfInterest, false, propertyReader.getSpeechHelp(), false);
-
     }
 
     private SpeechletResponse handlePrimaryIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
@@ -193,7 +338,42 @@ public class SideKickSpeechlet implements SpeechletV2 {
     }
 
     private SpeechletResponse handleNoMatchingIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
-        return  newAskResponse(propertyReader.getSpeechDidNotUnderstand(), false, propertyReader.getSpeechDidNotUnderstand(), false);
+        SystemState systemState = getSystemState(requestEnvelope.getContext());
+        apiEndpoint = systemState.getApiEndpoint();
+
+        Session session = requestEnvelope.getSession();
+        IntentRequest request = requestEnvelope.getRequest();
+
+        Integer Iescalation = (Integer) session.getAttribute(ESCALATION);
+        int escalation = 0;
+        if (Iescalation != null) {
+            escalation = Iescalation.intValue();
+            escalation = escalation+1;
+
+            Iescalation = new Integer(escalation);
+            session.setAttribute(ESCALATION, Iescalation);
+        } else {
+            Iescalation = new Integer(escalation);
+            session.setAttribute(ESCALATION, Iescalation);
+        }
+
+        if (escalation >= 2) {
+            // escalate to human
+            session.removeAttribute(ESCALATION);
+
+            String message = "I am sorry!! It appears i am not able to help you. Let me connect you to someone who can";
+            String apiEndpoint = systemState.getApiEndpoint();
+            // Dispatch a progressive response to engage the user while fetching events
+            dispatchProgressiveResponse(request.getRequestId(), message, systemState, apiEndpoint);
+
+            // todo Call Skype API to place a skype call
+
+        } else {
+            return newAskResponse(propertyReader.getSpeechSorry(), false, propertyReader.getSpeechReprompt(), false);
+
+        }
+
+        return newAskResponse("Connecting the call...", false, "Connecting the call...", false);
     }
 
     private SpeechletResponse handleNoIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
@@ -217,9 +397,9 @@ public class SideKickSpeechlet implements SpeechletV2 {
 
         log.debug("Coming into Yes Intent for " + stage);
 
-        if (stage.equalsIgnoreCase("SPECIALS")) {
+        if (stage != null && stage.equalsIgnoreCase("SPECIALS")) {
             return handleSpecial(requestEnvelope);
-        } else if (stage.equalsIgnoreCase("PLACE_ORDER")) {
+        } else if (stage != null && stage.equalsIgnoreCase("PLACE_ORDER")) {
             log.debug("Recording the order for - " + menuID);
         }
 
