@@ -1,0 +1,14 @@
+{
+  "title_display": "                 ",
+  "title": "Steal of the week",
+  "bg": "https://s3.amazonaws.com/dealsskillassets/Backgrounds_1360x1040-04.png",
+  "transparentbackground": "https://s3.amazonaws.com/dealsskillassets/1360x1040_Transparent-main.png",
+  "transparentdeal": "https://s3.amazonaws.com/dealsskillassets/1360x1040_Transparent-deal.png",
+  "background": "https://s3.amazonaws.com/dealsskillassets/main-background.jpg",
+  "dealbackground": "https://s3.amazonaws.com/dealsskillassets/deal_background.jpg",
+  "welcome": "Welcome to Steal of the Week.",
+  "description": "I can tell you about deals you would like to steal.",
+  "hint": "Try saying, \"Tell me a steal\"",
+  "reprompt": "Ask me for another steal.",
+  "buy": "You can say buy this deal and we will send you a text with the details on the deal"
+}

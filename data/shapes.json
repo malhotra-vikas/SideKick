@@ -1,0 +1,26 @@
+[
+  {
+    "name": "FitQuest Upright and Recumbent Bike with Resistance Bands",
+    "family": "Target",
+    "description" : "We are running a $50 discount on the list price. You could say buy this deal and we will send you a text with the details on the deal.",
+    "image" : "https://i04.hsncdn.com/is/image/HomeShoppingNetwork/prodfull/fitquest-upright-and-recumbent-bike-with-resistance-ban-d-20190112103615593~643920_alt12.jpg",
+    "landingURL" : "https://www.hsn.com/products/fitquest-upright-and-recumbent-bike-with-resistance-ban/8873001",
+    "Price" : "$50 off the list price of $199"
+  },
+  {
+    "name": "Simple Living Seneca XX Reclaimed Look End Table",
+    "family": "Macys",
+    "description" : "We are running a $25 discount on the list price. You could say buy this deal and we will send you a text with the details on the deal.",
+    "image" : "https://ak1.ostkcdn.com/images/products/8847806/Simple-Living-Seneca-XX-Reclaimed-Look-End-Table-1b0c1999-7fb8-4729-86b8-d8f91a7585fa.jpg",
+    "landingURL" : "https://www.overstock.com/Home-Garden/Simple-Living-Seneca-XX-Reclaimed-Look-End-Table/8847806/product.html",
+    "Price" : "$25 off the list price of $75"
+  },
+  {
+    "name": "Insignia™ - WAVE 2 Portable Bluetooth Speaker",
+    "family": "BestBuy",
+    "description" : "We are running a $99 discount on the list price. You could say buy this deal and we will send you a text with the details on the deal.",
+    "image" : "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6172/6172765_sd.jpg;maxHeight=640;maxWidth=550",
+    "landingURL" : "https://www.bestbuy.com/site/insignia-wave-2-portable-bluetooth-speaker-black/6172765.p?skuId=6172765",
+    "Price" : "$99 off the list price of $499"
+  }
+]
